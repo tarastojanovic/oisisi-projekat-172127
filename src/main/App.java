@@ -304,7 +304,173 @@ public class App implements ActionListener{
             
 	        panel.setVisible(true);
 		}
+		if(e.getSource()==editMenuItem || e.getSource()==editToolbarBtn) {
 
+			if (tabTitle == "Employees") {
+				Employee currentEmployee = employeesData.get(selectedRowE);
+				JTextField firstNameField = new JTextField(currentEmployee.getFirstName());
+		        JTextField lastNameField = new JTextField(currentEmployee.getLastName());
+		        JTextField jmbgField = new JTextField(currentEmployee.getJmbg());
+		        JTextField dobField = new JTextField(currentEmployee.getDob());
+		        JTextField emailField = new JTextField(currentEmployee.getEmail());
+		        Address currentEmpolyeeAddress = currentEmployee.getAddress();
+		        JTextField cityField = new JTextField(currentEmpolyeeAddress.getCity());
+		        JTextField streetField = new JTextField(currentEmpolyeeAddress.getStreet());
+		        JTextField numberField = new JTextField(currentEmpolyeeAddress.getNumber());
+		        String roles[] = { "modelator", "riger", "animator", "ilustrator" };
+		        int getIndex = Arrays.asList(roles).indexOf(currentEmployee.getRole());
+				JComboBox<String> rolesComboBox = new JComboBox<String>(roles);
+				rolesComboBox.setSelectedIndex(getIndex);
+				DefaultListModel<String> softwareList = new DefaultListModel<>();
+				softwareData.forEach((software) -> {
+					softwareList.addElement(software.getName());
+				});
+			
+				 JList<String> softwareJList = new JList<>(softwareList);
+				 softwareJList.setSelectedIndices(currentEmployee.getSoftwareSelectedIndices());
+	
+		        JPanel panel = new JPanel(new GridLayout(0, 1));
+		        panel.add(new JLabel("First Name"));
+		        panel.add(firstNameField);
+		        panel.add(new JLabel("Last Name"));
+		        panel.add(lastNameField);
+		        panel.add(new JLabel("JMBG"));
+		        panel.add(jmbgField);
+		        panel.add(new JLabel("City"));
+		        panel.add(cityField);
+		        panel.add(new JLabel("Street"));
+		        panel.add(streetField);
+		        panel.add(new JLabel("Number"));
+		        panel.add(numberField);
+		        panel.add(new JLabel("Date of birth"));
+		        panel.add(dobField);
+		        panel.add(new JLabel("Email"));
+		        panel.add(emailField);
+		        panel.add(new JLabel("Role"));
+		        panel.add(rolesComboBox);
+		        panel.add(new JLabel("Software"));
+		        panel.add(softwareJList);
+		        int result = JOptionPane.showConfirmDialog(null, panel, "Edit Employee Form",
+		            JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+		        if (result == JOptionPane.OK_OPTION) {
+		        	String firstName = firstNameField.getText();
+			        String lastName = lastNameField.getText();
+			        String jmbg = jmbgField.getText();
+			        String dob = dobField.getText();
+			        String email = emailField.getText();
+			        String city = cityField.getText();
+			        String street = streetField.getText();
+			        String number = numberField.getText();
+			        String role = rolesComboBox.getSelectedItem().toString();
+			        Address address = new Address(city, street, number);
+			        ArrayList<String> software = (ArrayList<String>) softwareJList.getSelectedValuesList();
+			        int[] softwareSelectedIndices = softwareJList.getSelectedIndices();
+			        Employee newEmployee = new Employee(firstName, lastName, jmbg, dob, email, address, role, software, softwareSelectedIndices);
+			        employeesData.set(selectedRowE, newEmployee);
+			        RefreshEmployeesTable();
+		        }
+	            
+		        panel.setVisible(true);
+			} else {
+				Software currentSoftware = softwareData.get(selectedRowT);
+				
+				ArrayList<String> currentBrushes = currentSoftware.getBrushes();
+				ArrayList<Brush> brushes = new ArrayList<>(); 
+				Brush b1 = new Brush("standard", "asd", "black");
+				Brush b2 = new Brush("smooth", "asd", "red");
+				Brush b3 = new Brush("remove", "asd", "blue");
+				Brush b4 = new Brush("deform", "asd", "white");
+				brushes.add(b1);
+				brushes.add(b2);
+				brushes.add(b3);
+				brushes.add(b4);
+				
+				DefaultListModel<String> brushesNames = new DefaultListModel<>();
+				brushes.forEach((brush) -> {
+					brushesNames.addElement(brush.getName());
+				});
+				currentBrushes.forEach((brush) -> {
+					
+				});
+				
+				ArrayList<Render> renders = new ArrayList<>(); 
+				Render r1 = new Render("render 1", "asd", "asd", "asd");
+				Render r2 = new Render("render 2", "asd", "asd", "asd");
+				Render r3 = new Render("render 3", "asd", "asd", "asd");
+				Render r4 = new Render("render 4", "asd", "asd", "asd");
+				renders.add(r1);
+				renders.add(r2);
+				renders.add(r3);
+				renders.add(r4);
+				DefaultListModel<String> renderNames = new DefaultListModel<>();
+				renders.forEach((render) -> {
+					renderNames.addElement(render.getName());
+				});
+				
+			
+				JList<String> brushesJList = new JList<>(brushesNames);
+				brushesJList.setSelectedIndices(currentSoftware.getBrushesSelectedIndices());
+				JTextField nameField = new JTextField(currentSoftware.getName());
+		        JTextField fileFormatFied = new JTextField(currentSoftware.getFileFormat());
+		        JTextField animationToolsField = new JTextField(currentSoftware.getAnimationTools());
+				JList<String> renderJList = new JList<>(renderNames);
+				renderJList.setSelectedIndices(currentSoftware.getRendersSelectedIndices());
+		        JPanel panel = new JPanel(new GridLayout(0, 1));
+		        panel.add(new JLabel("Name"));
+		        panel.add(nameField);
+		        panel.add(new JLabel("File Format"));
+		        panel.add(fileFormatFied);
+		        panel.add(new JLabel("Animation Tools"));
+		        panel.add(animationToolsField);
+		        panel.add(new JLabel("Brushes"));
+		        panel.add(brushesJList);
+		        panel.add(new JLabel("Renders"));
+		        panel.add(renderJList);
+	       
+		        int result = JOptionPane.showConfirmDialog(null, panel, "Create Software Form",
+		            JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+		        if (result == JOptionPane.OK_OPTION) {
+		        	String name = nameField.getText();
+			        String fileFormat = fileFormatFied.getText();
+			        String animationTools = animationToolsField.getText();
+			        ArrayList<String> brushesList = (ArrayList<String>) brushesJList.getSelectedValuesList();
+			        int[] brushesSelectedIndices = brushesJList.getSelectedIndices();
+			        ArrayList<String> rendersList = (ArrayList<String>) renderJList.getSelectedValuesList();
+			        int[] rendersSelectedIndices = renderJList.getSelectedIndices();
+			        Software newSoftware = new Software(name, brushesList, brushesSelectedIndices, fileFormat, animationTools, rendersList, rendersSelectedIndices);
+			        softwareData.set(selectedRowT, newSoftware);
+
+			        RefreshSoftwareTable();
+		        } else {
+		            System.out.println("Cancelled");
+		        }
+	            
+		        panel.setVisible(true);
+			}
+
+		}
+		if(e.getSource()==deleteMenuItem || e.getSource()==deleteToolbarBtn) {
+
+			JPanel panel = new JPanel(new GridLayout(0, 1));
+			panel.add(new JLabel("Are your sure ?"));
+			if (tabTitle == "Employees") {
+				int result = JOptionPane.showConfirmDialog(null, panel, "Remove Employee",
+			            JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+				 if (result == JOptionPane.OK_OPTION) {
+					 employeesData.remove(selectedRowE);
+					 RefreshEmployeesTable();
+				 } 
+			} else {
+				int result = JOptionPane.showConfirmDialog(null, panel, "Remove Software",
+			            JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+				 if (result == JOptionPane.OK_OPTION) {
+					softwareData.remove(selectedRowT);
+					RefreshSoftwareTable();
+				 } 
+			}
+			panel.setVisible(true);
+			
+		}
 
 	}     
 	public static void main(String[] args) {    
