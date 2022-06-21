@@ -6,7 +6,9 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 
+import models.Address;
 import models.Brush;
+import models.Employee;
 import models.Render;
 import models.Software;
 
@@ -22,10 +24,11 @@ import java.util.ArrayList;
 import java.util.Arrays;    
 
 public class App implements ActionListener{ 
-	DefaultTableModel softwareTableModel;
-	JTable jtSoftware;
+	DefaultTableModel employeesTableModel, softwareTableModel;
+	JTable jtEmployees, jtSoftware;
 	JTabbedPane tp;
-	int selectedRowT;
+	int selectedRowE, selectedRowT;
+	ArrayList<Employee> employeesData = new ArrayList<>(); 
 	ArrayList<Software> softwareData = new ArrayList<>(); 
 	JFrame f;
 	JButton addToolbarBtn, editToolbarBtn, deleteToolbarBtn;
@@ -80,13 +83,26 @@ public class App implements ActionListener{
 	            selectedRowT = jtSoftware.getSelectedRow();
 	        }
 	    });
-        JPanel p1 = new JPanel();  
+		
+		String employeesColumn[]={"First Name","Last Name","JMBG", "Date of Birth", "Email", "Address", "Role", "Software"};  
+		employeesTableModel = new DefaultTableModel(employeesColumn, 0);
+		jtEmployees = new JTable(employeesTableModel);            
+		JScrollPane spEmployees = new JScrollPane(jtEmployees);    
+		
+		jtEmployees.getSelectionModel().addListSelectionListener(new ListSelectionListener(){
+	        public void valueChanged(ListSelectionEvent event) {
+	            selectedRowE = jtEmployees.getSelectedRow();
+	        }
+	    });
+		
+		JPanel p1 = new JPanel();  
+        p1.add(spEmployees);
         JPanel p2 = new JPanel();  
         p2.add(spSoftware);
         tp = new JTabbedPane();  
         tp.setBounds(50,50,200,200);  
         tp.add("Employees",p1);  
-        tp.add("Software",p2);  
+        tp.add("Software",p2);   
         
         JPanel statusPanel = new JPanel();
         statusPanel.setBorder(new BevelBorder(BevelBorder.LOWERED));
@@ -126,6 +142,30 @@ public class App implements ActionListener{
               });
 		});
 	}
+	public void RefreshEmployeesTable() {
+		for (int i = jtEmployees.getRowCount() - 1; i >= 0; i--) {
+			employeesTableModel.removeRow(i);
+		}
+		
+		employeesData.forEach((employee) -> {
+			String address = "";
+			Address empolyeeAddress = employee.getAddress();
+			
+			address = empolyeeAddress.getCity() + " " + empolyeeAddress.getStreet() + " " + empolyeeAddress.getNumber();
+			
+			employeesTableModel.addRow(new Object[]{
+					employee.getFirstName(),
+					employee.getLastName(),
+					employee.getJmbg(),
+					employee.getDob(),
+					employee.getEmail(),
+					address,
+					employee.getRole(),
+					employee.getSoftware().toString()
+              });
+		});
+	}
+
 
 	public void actionPerformed(ActionEvent e) {    
 		int selectedIndex = tp.getSelectedIndex();
@@ -193,6 +233,71 @@ public class App implements ActionListener{
 		        softwareData.add(newSoftware);
 		        
 		        RefreshSoftwareTable();
+	        } else {
+	            System.out.println("Cancelled");
+	        }
+            
+	        panel.setVisible(true);
+		}
+		if(e.getSource()==employeeMenuItem || (e.getSource()==addToolbarBtn && tabTitle == "Employees") ) {
+
+			JTextField firstNameField = new JTextField();
+	        JTextField lastNameField = new JTextField();
+	        JTextField jmbgField = new JTextField();
+	        JTextField dobField = new JTextField();
+	        JTextField emailField = new JTextField();
+	        JTextField cityField = new JTextField();
+	        JTextField streetField = new JTextField();
+	        JTextField numberField = new JTextField();
+	        String roles[] = { "modelator", "riger", "animator", "ilustrator" };
+			JComboBox<String> rolesComboBox = new JComboBox<String>(roles);
+			DefaultListModel<String> softwareList = new DefaultListModel<>();
+			softwareData.forEach((software) -> {
+				softwareList.addElement(software.getName());
+			});
+		
+			 JList<String> softwareJList = new JList<>(softwareList);
+	        JPanel panel = new JPanel(new GridLayout(0, 1));
+	        panel.add(new JLabel("First Name"));
+	        panel.add(firstNameField);
+	        panel.add(new JLabel("Last Name"));
+	        panel.add(lastNameField);
+	        panel.add(new JLabel("JMBG"));
+	        panel.add(jmbgField);
+	        panel.add(new JLabel("City"));
+	        panel.add(cityField);
+	        panel.add(new JLabel("Street"));
+	        panel.add(streetField);
+	        panel.add(new JLabel("Number"));
+	        panel.add(numberField);
+	        panel.add(new JLabel("Date of birth"));
+	        panel.add(dobField);
+	        panel.add(new JLabel("Email"));
+	        panel.add(emailField);
+	        panel.add(new JLabel("Role"));
+	        panel.add(rolesComboBox);
+	        panel.add(new JLabel("Software"));
+	        panel.add(softwareJList);
+	        
+	        int result = JOptionPane.showConfirmDialog(null, panel, "Create Employee Form",
+	            JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+	        if (result == JOptionPane.OK_OPTION) {
+	        	String firstName = firstNameField.getText();
+		        String lastName = lastNameField.getText();
+		        String jmbg = jmbgField.getText();
+		        String dob = dobField.getText();
+		        String email = emailField.getText();
+		        String city = cityField.getText();
+		        String street = streetField.getText();
+		        String number = numberField.getText();
+		        String role = rolesComboBox.getSelectedItem().toString();
+		        Address address = new Address(city, street, number);
+		        ArrayList<String> software = (ArrayList<String>) softwareJList.getSelectedValuesList();
+		        int[] softwareSelectedIndices = softwareJList.getSelectedIndices();
+		        Employee newEmployee = new Employee(firstName, lastName, jmbg, dob, email, address, role, software, softwareSelectedIndices);
+		        employeesData.add(newEmployee);
+		        
+		        RefreshEmployeesTable();
 	        } else {
 	            System.out.println("Cancelled");
 	        }
